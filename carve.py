@@ -1,0 +1,61 @@
+#!/usr/local/bin/python3
+
+################################################################################
+# Author: Devin P Shanahan                                                     #
+# Version: 0.0.1                                                               #
+#                                                                              #
+# This python script is a wrapper for the GNU dd utility.                      #
+#                                                                              #
+# usage: carve.py [-h] [-b BLOCKSIZE] (-c COUNT | -e END) -i INPUT [-o OUTPUT] #
+#                -s SKIP                                                       #
+#                                                                              #
+# optional arguments:                                                          #
+#   -h, --help            show this help message and exit                      #
+#   -b BLOCKSIZE, --blockSize BLOCKSIZE                                        #
+#                         Read and write block size; independent of COUNT,     #
+#                         END, and SKIP                                        #
+#   -c COUNT, --count COUNT                                                    #
+#                         Length, in bytes, of the chunk to be carved;         #
+#                         independent of BLOCKSIZE                             #
+#   -e END, --end END     Ending offset, in bytes, of the chunk to be carved;  #
+#                         independent of BLOCKSIZE                             #
+#   -i INPUT, --input INPUT                                                    #
+#                         Input file                                           #
+#   -o OUTPUT, --output OUTPUT                                                 #
+#                         Output file; defaults to INPUT.carve                 #
+#   -s SKIP, --skip SKIP  Starting offset, in bytes, of the chunk to be        #
+#                         carved; independent of BLOCKSIZE                     #
+################################################################################
+
+# Imports
+import argparse
+from subprocess import call
+
+# Setup argument parser
+parser = argparse.ArgumentParser(description='Wrapper for the dd utility.')
+group = parser.add_mutually_exclusive_group(required=True)
+parser.add_argument('-b', '--blockSize', default=512, type=int, help='Read and write block size; independent of COUNT, END, and SKIP')
+group.add_argument('-c', '--count', type=int, help='Length, in bytes, of the chunk to be carved; independent of BLOCKSIZE')
+group.add_argument('-e', '--end', type=int, help='Ending offset, in bytes, of the chunk to be carved; independent of BLOCKSIZE')
+parser.add_argument('-i', '--input', required=True, help='Input file')
+parser.add_argument('-o', '--output', help='Output file; defaults to INPUT.carve')
+parser.add_argument('-s', '--skip', type=int, required=True, help='Starting offset, in bytes, of the chunk to be carved; independent of BLOCKSIZE')
+args = parser.parse_args()
+
+# Read arguments
+blockSize = args.blockSize
+count = args.count
+end = args.end
+input = args.input
+output = args.output
+skip = args.skip
+
+# Manipulate arguments
+if output == None: output = input + ".carve"
+if count == None and end != None: count = end - skip
+
+# Create shell command
+command = "gdd if=" + input + " of=" + output + " skip=" + str(skip) + " count=" + str(count)+ " bs=" + str(blockSize) + " iflag=count_bytes,skip_bytes"
+
+# Launch shell command
+call(command, shell=True)
