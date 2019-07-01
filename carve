@@ -4,10 +4,10 @@
 # Author: Devin P Shanahan                                                     #
 # Version: 0.0.1                                                               #
 #                                                                              #
-# This python script is a wrapper for the GNU dd utility.                      #
-#                                                                              #
 # usage: carve.py [-h] [-b BLOCKSIZE] (-c COUNT | -e END) -i INPUT [-o OUTPUT] #
 #                -s SKIP                                                       #
+#                                                                              #
+# This python script is a wrapper for the GNU dd utility.                      #
 #                                                                              #
 # optional arguments:                                                          #
 #   -h, --help            show this help message and exit                      #
